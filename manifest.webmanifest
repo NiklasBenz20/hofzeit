@@ -1,0 +1,29 @@
+{
+  "name": "Hofzeit · Harzerhof",
+  "short_name": "Hofzeit",
+  "description": "Zeiterfassung Harzerhof",
+  "lang": "de",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0b0906",
+  "theme_color": "#0b0906",
+  "icons": [
+    {
+      "src": "https://lh3.googleusercontent.com/d/1vQT2zibXGY4WCwTOlSPalPiSsR1pUpIP=s192",
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "https://lh3.googleusercontent.com/d/1vQT2zibXGY4WCwTOlSPalPiSsR1pUpIP=s512",
+      "sizes": "512x512",
+      "purpose": "any"
+    },
+    {
+      "src": "https://lh3.googleusercontent.com/d/1vQT2zibXGY4WCwTOlSPalPiSsR1pUpIP=s512",
+      "sizes": "512x512",
+      "purpose": "maskable"
+    }
+  ]
+}
