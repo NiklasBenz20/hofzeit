@@ -22,12 +22,18 @@ html,body{margin:0;height:100%;background:#0b0906;overflow:hidden;overscroll-beh
 #ld b{display:block;margin-top:18px;text-align:center;font:600 15px/1.2 -apple-system,Segoe UI,Roboto,sans-serif;letter-spacing:.2em;color:#d6a94e}
 @keyframes p{50%{transform:scale(1.06)}}
 .gone{opacity:0;pointer-events:none}
+/* iPhone: Erlaubnis für den 3D-Neige-Effekt */
+#gyro{position:fixed;z-index:5;left:50%;top:calc(env(safe-area-inset-top,0px) + 10px);transform:translateX(-50%);padding:9px 16px;border-radius:999px;border:1px solid rgba(214,169,78,.55);background:rgba(20,16,10,.92);color:#f1d48b;font:600 14px -apple-system,Segoe UI,Roboto,sans-serif;box-shadow:0 10px 30px -10px rgba(214,169,78,.6);transition:opacity .5s}
+#tap{position:fixed;inset:0;z-index:4;background:transparent}
+[hidden]{display:none!important}
 </style>
 </head>
 <body>
 <div id="top"></div>
 <div id="ld"><div><img src="https://lh3.googleusercontent.com/d/1vQT2zibXGY4WCwTOlSPalPiSsR1pUpIP=s208" alt=""><b>HOFZEIT</b></div></div>
-<iframe id="app" src="https://script.google.com/macros/s/AKfycbwNbKMkJrxn_Z8eowaeZnr4K9GXI1ASz_c0uOOfVWWiivPCYuyOXDnhJDi68XhZlGGB/exec" title="Hofzeit" allow="clipboard-write; fullscreen"></iframe>
+<iframe id="app" src="https://script.google.com/macros/s/AKfycbwNbKMkJrxn_Z8eowaeZnr4K9GXI1ASz_c0uOOfVWWiivPCYuyOXDnhJDi68XhZlGGB/exec" title="Hofzeit" allow="clipboard-write; fullscreen; accelerometer; gyroscope"></iframe>
+<button id="gyro" hidden>✨ 3D-Effekt einschalten</button>
+<div id="tap" hidden></div>
 <script>
 (function(){
   var f=document.getElementById('app'),l=document.getElementById('ld');
@@ -35,6 +41,26 @@ html,body{margin:0;height:100%;background:#0b0906;overflow:hidden;overscroll-beh
   f.addEventListener('load',function(){setTimeout(hide,1200);});
   setTimeout(hide,12000);
   if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(){});}
+
+  // 3D: Handy-Neigung an die App weiterreichen (die App liegt mehrere Rahmen tief)
+  function send(w,msg,d){try{w.postMessage(msg,'*');}catch(e){} if(d>4)return; try{for(var i=0;i<w.frames.length;i++)send(w.frames[i],msg,d+1);}catch(e){}}
+  var last=0;
+  function onOri(e){if(e.beta==null)return; var n=Date.now(); if(n-last<33)return; last=n; send(f.contentWindow,{hzTilt:1,b:e.beta,g:e.gamma},0);}
+  function listen(){window.addEventListener('deviceorientation',onOri,{passive:true});}
+  function get(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+  function set(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+  var D=window.DeviceOrientationEvent;
+  if(!D){return;}
+  if(typeof D.requestPermission!=='function'){listen();return;}
+  // iPhone: Apple verlangt die Erlaubnis durch Antippen
+  function ask(done){D.requestPermission().then(function(s){if(s==='granted'){set('hzGyro','on');listen();}else set('hzGyro','off');}).catch(function(){}).then(done);}
+  var st=get('hzGyro');
+  if(st==='off')return;
+  if(st==='on'){var t=document.getElementById('tap');t.hidden=false;t.addEventListener('click',function(){t.hidden=true;ask(function(){});},{once:true});return;}
+  var g=document.getElementById('gyro');
+  setTimeout(function(){g.hidden=false;},1500);
+  g.onclick=function(){g.hidden=true;ask(function(){});};
+  setTimeout(function(){g.style.opacity='0';setTimeout(function(){g.hidden=true;},600);},11000);
 })();
 </script>
 </body>
